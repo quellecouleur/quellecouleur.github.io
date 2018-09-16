@@ -1,0 +1,141 @@
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="description" content="Choisir la couleur de ses habits">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+  <script src="assets/vue.js"></script>
+  <script src="assets/vuex.min.js"></script>
+  <script src="color-diff.js"></script>
+  <script src="colors.js"></script>
+  <link href="assets/styles.css" rel="stylesheet">
+</head>
+
+<body>
+  
+
+  <template id="color_selector">
+    <div class="color_selector" v-bind:style="style" v-on:click="select">
+      <span v-if="isSelected" class="color_selector__check">✓</span>
+    </div>
+  </template>
+  <div id="app">
+    <div class="question"> Quelle est la couleur de votre peau ?</div>
+      <color-selector store-key="skinColor" hex-color="#8d5524"></color-selector>
+      <color-selector store-key="skinColor" hex-color="#c68642"></color-selector>
+      <color-selector store-key="skinColor" hex-color="#e0ac69"></color-selector>
+      <color-selector store-key="skinColor" hex-color="#ffdbac"></color-selector>
+
+
+
+    <div class="question"> Quelle est la couleur de votre veste ? </div>
+    <color-selector store-key="jacketColor" hex-color="#d6a090"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#fe3b1e"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#a12c32"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#fa2f7a"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#fb9fda"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#e61cf7"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#992f7c"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#47011f"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#051155"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#4f02ec"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#2d69cb"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#00a6ee"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#6febff"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#08a29a"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#2a666a"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#063619"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#000000"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#4a4957"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#8e7ba4"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#b7c0ff"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#ffffff"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#acbe9c"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#827c70"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#5a3b1c"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#ae6507"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#f7aa30"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#f4ea5c"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#9b9500"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#566204"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#11963b"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#51e113"></color-selector>
+<color-selector store-key="jacketColor" hex-color="#08fdcc"></color-selector>
+
+  <div id="results">
+    {{ debug }}
+      <!--a target="_blank"  href="https://www.amazon.fr/gp/product/B0747LGRW1/ref=as_li_tl?ie=UTF8&camp=1642&creative=6746&creativeASIN=B0747LGRW1&linkCode=as2&tag=klclr-21&linkId=358591f71865f2b622c0cf802b8d0240"><img border="0" src="//ws-eu.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=FR&ASIN=B0747LGRW1&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL250_&tag=klclr-21" ></a><img src="//ir-fr.amazon-adsystem.com/e/ir?t=klclr-21&l=am2&o=8&a=B0747LGRW1" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /-->
+  </div>
+    </div>
+  <script>
+
+    const STORE = new Vuex.Store({
+      state: {
+        debug: 'debugging',
+        skinColor: null,
+        jacketColor: null
+      },
+      mutations: {
+        debug(state, text) {
+          state.debug = text;
+        },
+        changeColor(state, payload) {
+          state[payload.key] = payload.color;
+        }
+      }
+    })
+    Vue.component('color-selector', {
+      props: ['hexColor', 'storeKey'],
+      computed: {
+        isSelected() {
+          return STORE.state[this.storeKey] === this.hexColor;
+        }
+      },
+      methods: {
+        convertToLab(hexString) {
+          let  rgb = hexToRgb(hexString);
+          rgb = [rgb.r, rgb.g, rgb.b];
+          return rgb2lab(rgb);
+        },
+        select(e) {
+          if(STORE.state[this.storeKey]) {
+
+            let old = this.convertToLab(STORE.state[this.storeKey]);
+            let nwe = this.convertToLab(this.hexColor);console.log(nwe)
+            let deltaE = new dE94(old, nwe, {lightness: 2, chroma: 0.048, hue: 0.014} /* textile weight, cf wikipedia*/)
+          STORE.commit('debug', deltaE.getDeltaE());
+
+            
+          }
+          STORE.commit('changeColor', { key: this.storeKey, color: this.hexColor} );
+        }
+      },
+      data: function () {
+        return {
+          style: {
+            'background-color': this.hexColor
+          }
+        }
+      },
+      template: '#color_selector'
+    })
+
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!'
+      },
+      computed: {
+        debug() {
+          return STORE.state.debug;
+        }
+      },
+    })
+  </script>
+
+</body>
+
+</html>
